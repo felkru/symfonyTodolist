@@ -1,3 +1,7 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+   path: /
+   controller: App\Controller\DefaultController::index
+
+create-task:
+   path: /create-task
+   controller: App\Controller\CreateTask::createTask
