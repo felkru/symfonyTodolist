@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="This is a todo list created by Felix Krueckel.">
     <title>Task Manager</title>
     <style>
         body {
@@ -51,12 +52,20 @@
 
         input[type=submit] {
             padding: 5px 10px; 
-            background:#2be; 
+            background:#25e; 
             border:0 none;
             cursor:pointer;
             border-radius: 5px;
             color: #fff;
             font-weight: 700; 
+        }
+
+        fieldset, input[type=text] {
+            border: 1px solid black;
+        }
+
+        input[type=text]:focus {
+            outline-width: 0;
         }
 
         .notopmg {
@@ -76,45 +85,69 @@
                 text-align: left;
             }
 
+            input[type=checkbox] {
+                transform: scale(1.5);
+            }
+
+            li label {
+                margin-left: 5px;
+            }
+
             input[type=text], input[type=submit] {
                 padding: 10px;
+            }
+
+            #create-task-form {
+                position: sticky;
+                top: -2px;
+            }
+
+            #create-task-form[stuck] {
+                background: #fff;
+                z-index: 1000;
+                padding: 10px 0px 8px 0px;
             }
         }
     </style>
 </head>
 <body>
     <h1>Task Manager</h1>
-    <h2 class="notopmg">My Tasks</h2>
-    <form action="/" method="post" id="outstanding-tasks">
+    <h2 class="notopmg">Add Task</h2>
+    <form action="/create-task" method="post" id="create-task-form">
+        <label for="new-task-description">Description of Task</label>
+        <input type="text" name="description" id="new-task-description">
+        <input type="submit" value="Add Task">
+    </form>
+    <h2>My Tasks</h2>
+    <form action="/change-tasks" method="POST" id="outstanding-tasks">
         <fieldset>
             <legend>ongoing Tasks</legend>
             <ul>
-                <li><input type="checkbox" id="task1" name="task1" value="Bike">
-                <label for="task1">clean my room</label></li>
-                <li><input type="checkbox" id="task1" name="task2" value="Car">
-                <label for="task2">finish free code camp</label></li>
-                <li><input type="checkbox" id="task3" name="task3" value="Boat">
-                <label for="task3">be kind</label></li>
+                {% for task in ongoing_tasks %}
+                    <li><input type="checkbox" id="task{{ task.getId() }}" name="tasks[]" value="{{ task.getId() }}">
+                    <label for="task{{ task.getId() }}">{{ task.getName() }}</label></li>
+                {% endfor %}
             </ul>
         </fieldset>
         <fieldset>
             <legend>finished Tasks</legend>
             <ul>
-                <li><input type="checkbox" id="task4" name="task4" value="Bike" checked>
-                <label for="task4">read a book</label></li>
-                <li><input type="checkbox" id="task5" name="task5" value="Car" checked>
-                <label for="task5">have a great day</label></li>
-                <li><input type="checkbox" id="task6" name="task6" value="Boat" checked>
-                <label for="task6">do sports</label></li>
-            </ul>
+                {% for task in finished_tasks %}
+                    <li><input type="checkbox" id="task{{ task.getId() }}" name="tasks[]" value="{{ task.getId() }}" checked>
+                    <label for="task{{ task.getId() }}">{{ task.getName() }}</label></li>
+                {% endfor %}
         </fieldset>
-        <input type="submit" value="Confirm">
+        <input type="submit" value="Save Tasks">
     </form>
-    <h2>add new Task</h2>
-    <form action="/create-task" method="post" id="create-task-form">
-        <label for="new-task-description">Beschreibung</label>
-        <input type="text" name="description" id="new-task-description">
-        <input type="submit" value="add Task">
-    </form>
+    <script>
+      const observer = new IntersectionObserver( 
+        ([e]) => {
+            e.target.toggleAttribute('stuck', e.intersectionRatio < 1);
+        },
+        {threshold: [1]}
+        );
+
+        observer.observe(document.getElementById('create-task-form'));  
+    </script>
 </body>
 </html>

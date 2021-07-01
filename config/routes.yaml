@@ -4,4 +4,4 @@ index:
 
 create-task:
    path: /create-task
-   controller: App\Controller\CreateTask::createTask
+   controller: App\Controller\TaskController::createTask
